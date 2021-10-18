@@ -11,6 +11,29 @@ python -m pip install wheel
 python -m pip install -r requirements.txt
 ```
 
+## Firmware update
+
+### Expansion board
+
+* `sudo apt install dfu-util`
+* Firmware download from https://docs.pycom.io/updatefirmware/expansionboard/
+* Unplug USB
+* Remove LoPy module
+* Pre-type command `sudo dfu-util -D <firmware>.dfu`
+* Press-and-hold `S1/MCLR` button
+* Insert USB, wait 1 second
+* Hit `<Enter>` on pre-typed command (within 7 seconds)
+* Command should complete with "Done!"
+
+### LoPy module
+
+* Links to Firmware Update Tool https://docs.pycom.io/updatefirmware/device/
+* Insert LoPy module into Expansion Board
+* Insert USB
+* Run firmware update tool with `pycom-fwtool` - follow prompts.
+* Re-copy main.py etc to board
+* Reset board with button.
+
 ## Development tools
 
 Essentially this is TTY access to the 'REPL' interface to MicroPython on the LoPy boards, plus the
@@ -55,4 +78,3 @@ https://github.com/dhylands/rshell
 Simple python pip install on your workstation
 Pretty old - on my Linux machine this would crash any time I tried transferring files to the LoPy - there are interweb threads
 discussing timing issues with the code.
-
