@@ -80,6 +80,77 @@ from uping import ping
 ping('cdbb.uk')
 ```
 
-## Create/copy `main.py` and `global_config.json`
+## Create Gateway on TTN V3 console
 
-See this repo /pygate directory, with an example `main.py` and `global_config.json`
+At the Pygate REPL prompt (i.e. via `mpfshell` or similar), get the WLAN mac address with:
+```
+from network import WLAN
+import binascii
+wl = WLAN()
+binascii.hexlify(wl.mac().sta_mac)
+```
+e.g. we will assume `ABCDEF010203` in example below.
+
+At https://eu1.cloud.thethings.network/console select "Gateways" and "Add Gateway".
+
+Gateway ID: csn-pygate-[LAST 6 DIGITS OF WLAN MAC] e.g. `csn-pygate-010203`.
+
+Gateway EUI: [BEEF<WLAN MAC] e.g. `BEEFABCDEF010203`
+
+Gateway Server Address: `eu1.cloud.thethings.network`
+
+Frequency Plan: `EU_863_870_TTN`
+
+## Create `global_config.json`
+
+On the TTN V3 console entry for the gateway, click the `[Download global_conf.json]` button (at bottom of gateway config).
+
+Open the `global_conf.json` file in your editor. Delete the `gateway_conf` property at the bottom of the file, DELETE the comma above
+that property to keep the JSON valid.
+
+Add a NEW `gateway_conf` property (I recommend at the top, it is easier to find) containing the TTN `Gateway EUI`
+property value as the `gateway_ID` property in the file. E.g.:
+```
+    "gateway_conf": {
+        "gateway_ID": "BEEFABCDEF010203",
+        "server_address": "eu1.cloud.thethings.network",
+        "serv_port_up": 1700,
+        "serv_port_down": 1700,
+        "keepalive_interval": 10,
+        "stat_interval": 30,
+        "push_timeout_ms": 100,
+        "forward_crc_valid": true,
+        "forward_crc_error": false,
+        "forward_crc_disabled": false
+    },
+```
+SAVE this file as `gateway_config.json` (note the small file change from `gateway_conf.json`, just to reduce the chance of
+a mixup). This file (`gateway_config.json`) will be loaded by `main.py`.
+
+## Create `main.py`
+
+This assumes you have already checked connecting the Pygate to your WiFi network is going to work by testing with the
+steps earlier in this README.
+
+Copy the file `pygate/main.py` and open with your editor.
+
+For typical home WPA passphrase authentication, edit the line
+```
+wlan.connect(ssid='<YOUR SSID>', auth=(WLAN.WPA2, "<YOUR PASSPHRASE>"))
+```
+to contain the correct SSID and passphrase for your WiFi network. If you are using enterprise authentication, then try
+```
+wlan.connect(ssid='YOUR SSID', auth=(WLAN.WPA2_ENT, 'username', 'password'))
+```
+Save the file as `main.py` - you will be downloading this file to the Pygate.
+
+## Copy `main.py` and `global_config.json` to the Pygate.
+
+Using your console tool, e.g. `mpfshell`, copy `main.py` and `global_config.json` from your PC to the Pygate.
+
+At the Pygate REPL prompt, you can trigger a soft reboot with `Ctrl-D`.
+
+You should see encouraging messages appearing in the REPL console saying the Pygate is connecting to TTN V3 ok, and equally
+encouraging messages on the TTN console showing the Pygate springing into life. In due course you should see the
+all-important `Receive uplink message ... ` messages on the TTN console, which is your sensor data flowing into the TTN
+application. If so, congratulations.
