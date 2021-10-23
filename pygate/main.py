@@ -4,6 +4,7 @@ import machine
 from machine import RTC
 import pycom
 
+print('\nStarting LoRaWAN concentrator')
 # Disable Hearbeat
 pycom.heartbeat(False)
 
@@ -23,22 +24,31 @@ def machine_cb (arg):
 # register callback function
 machine.callback(trigger = (machine.PYGATE_START_EVT | machine.PYGATE_STOP_EVT | machine.PYGATE_ERROR_EVT), handler=machine_cb)
 
+print('Connecting to WiFi...',  end='')
 # Connect to a Wifi Network
 wlan = WLAN(mode=WLAN.STA)
 wlan.connect(ssid='<SSID>', auth=(WLAN.WPA2, "<PASSWORD>"))
 
 while not wlan.isconnected():
+    print('.', end='')
     time.sleep(1)
-
-print("Wifi Connection established")
+print(" OK")
 
 # Sync time via NTP server for GW timestamps on Events
+print('Syncing RTC via ntp...', end='')
 rtc = RTC()
-rtc.ntp_sync(server="0.pool.ntp.org")
+rtc.ntp_sync(server="pool.ntp.org")
+
+while not rtc.synced():
+    print('.', end='')
+    time.sleep(.5)
+print(" OK\n")
 
 # Read the GW config file from Filesystem
-fp = open('/flash/config.json','r')
-buf = fp.read()
+with open('/flash/global_config.json','r') as fp:
+    buf = fp.read()
 
 # Start the Pygate
 machine.pygate_init(buf)
+# disable degub messages
+# machine.pygate_debug_level(1)
