@@ -1,8 +1,8 @@
 # For now, this example shows commands to type at the REPL.
 # Note the auth password has to be created as described in cam_wifi.md
 
-ssid = "Forster-Lewis"
-passphrase = "middlehall"
+ssid = "<ADD YOUR SSID>"
+passphrase = "<ADD YOUR PASSPHRASE>"
 
 from network import WLAN
 import ubinascii
