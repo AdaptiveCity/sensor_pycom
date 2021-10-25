@@ -30,18 +30,18 @@ mp = MPL3115A2(pycoproc,mode=ALTITUDE) # Returns height in meters. Mode may also
 print("\nMPL3115A2 temperature: " + str(mp.temperature())+ " deg C")
 print("Altitude: " + str(mp.altitude())+" m")
 mpp = MPL3115A2(pycoproc,mode=PRESSURE) # Returns pressure in Pa. Mode may also be set to ALTITUDE, returning a value in meters
-print("Pressure: " + str(mpp.pressure())+ "Pa")
+print("Pressure: " + str(mpp.pressure())+ " Pa")
 
 si = SI7006A20(pycoproc)
 print("\nSI7006A20 Temperature: " + str(si.temperature()) + " deg C")
 print("Relative Humidity: " + str(si.humidity()) + " %RH")
 print("Dew point: "+ str(si.dew_point()) + " deg C")
 t_ambient = 24.4
-print("Humidity Ambient for " + str(t_ambient) + " deg C is " + str(si.humid_ambient(t_ambient)) + "%RH")
+print("Humidity Ambient for " + str(t_ambient) + " deg C is " + str(si.humid_ambient(t_ambient)) + " %RH")
 
 
 lt = LTR329ALS01(pycoproc)
-print("\nLTR329ALS01 Light (channel Blue, channel Red): " + str(lt.light())," Lux: ", str(lt.lux()), "lx")
+print("\nLTR329ALS01 Light (channel Blue, channel Red): " + str(lt.light())," Lux: ", str(lt.lux()), " lux")
 
 li = LIS2HH12(pycoproc)
 print("\nLIS2HH12 Acceleration: " + str(li.acceleration()))
