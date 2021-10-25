@@ -9,7 +9,11 @@ import ubinascii
 # Australia = LoRa.AU915
 # Europe = LoRa.EU868
 # United States = LoRa.US915
+
+print("Creating LoRa instance: LORAWAN / EU868")
 lora = LoRa(mode=LoRa.LORAWAN, region=LoRa.EU868)
+
+print("LoRa instance created for dev_eui: "+ubinascii.hexlify(lora.mac()).decode('utf-8'))
 
 # create an OTAA authentication parameters, change them to the provided credentials
 app_eui = ubinascii.unhexlify('0000000000000000')
@@ -25,6 +29,7 @@ app_key = ubinascii.unhexlify('9F435D0771964CB8B6F65F4F0B470B37')
 # for i in range(66,72):
 #     lora.remove_channel(i)
 
+print("Joining Lora network OTAA with app_eui zeroes and app_key: "+ubinascii.hexlify(app_key).decode('utf-8'))
 # join a network using OTAA (Over the Air Activation)
 #uncomment below to use LoRaWAN application provided dev_eui
 lora.join(activation=LoRa.OTAA, auth=(app_eui, app_key), timeout=0)
@@ -46,6 +51,8 @@ s.setsockopt(socket.SOL_LORA, socket.SO_DR, 5)
 # (waits for the data to be sent and for the 2 receive windows to expire)
 s.setblocking(True)
 
+print("Sending 0x010203 to LoRaWAN network")
+
 # send some data
 s.send(bytes([0x01, 0x02, 0x03]))
 
@@ -55,4 +62,4 @@ s.setblocking(False)
 
 # get any data received (if any...)
 data = s.recv(64)
-print(data)
+print("Optional received data:" + ubinascii.hexlify(data).decode('utf-8'))
