@@ -17,6 +17,15 @@ import socket
 import time
 import ubinascii
 
+# create an OTAA authentication parameters, change them to the provided credentials
+app_eui = ubinascii.unhexlify('0000000000000000')
+app_key = ubinascii.unhexlify('9F435D0771964CB8B6F65F4F0B470B37')
+# Note for the TTN registration you can find the LoPy4 preset dev_ui via:
+# >>> from network import LoRa
+# >>> lora = LoRa(mode=LoRa.LORAWAN, region=LoRa.EU868)
+# >>> ubinascii.hexlify(lora.mac())
+# You do not need to set this value in this code
+
 pycom.heartbeat(False)
 pycom.rgbled(0x000007) # blue
 time.sleep(1)
@@ -51,9 +60,6 @@ lora = LoRa(mode=LoRa.LORAWAN, region=LoRa.EU868)
 
 print("LoRa instance created for dev_eui: "+ubinascii.hexlify(lora.mac()).decode('utf-8'))
 
-# create an OTAA authentication parameters, change them to the provided credentials
-app_eui = ubinascii.unhexlify('0000000000000000')
-app_key = ubinascii.unhexlify('9F435D0771964CB8B6F65F4F0B470B37')
 #uncomment to use LoRaWAN application provided dev_eui
 #dev_eui = ubinascii.unhexlify('70B3D549938EA1EE')
 
@@ -133,5 +139,5 @@ while True:
     # get any data received (if any...)
     data = s.recv(64)
     print("Optional received data:" + ubinascii.hexlify(data).decode('utf-8'))
-    
+
     pycom.rgbled(0x000000) # off
