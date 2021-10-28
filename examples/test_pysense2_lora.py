@@ -18,7 +18,11 @@ import time
 import ubinascii
 
 pycom.heartbeat(False)
-pycom.rgbled(0x0A0A08) # white
+pycom.rgbled(0x000007) # blue
+time.sleep(1)
+pycom.rgbled(0x000000) # off
+time.sleep(1)
+pycom.rgbled(0x000007) # blue
 
 pycoproc = Pycoproc()
 if pycoproc.read_product_id() != Pycoproc.USB_PID_PYSENSE:
@@ -73,6 +77,8 @@ while not lora.has_joined():
     print('Not yet joined...')
 
 print('Joined')
+pycom.rgbled(0x000700) # green
+
 # create a LoRa socket
 s = socket.socket(socket.AF_LORA, socket.SOCK_RAW)
 
@@ -96,8 +102,18 @@ s.setblocking(False)
 data = s.recv(64)
 print("Optional received data:" + ubinascii.hexlify(data).decode('utf-8'))
 
+pycom.rgbled(0x000000) # off
+
 while True:
-    time.sleep(300) # Sleep for 5 mins
+    for i in range(10):
+        time.sleep(29.5) # Sleep for 29.5 seconds
+        pycom.rgbled(0x000700) # green
+        time.sleep(0.5) # Sleep for 0.5 seconds
+        pycom.rgbled(0x000000) # off
+
+    pycom.rgbled(0x000007) # blue
+    time.sleep(2) # Sleep for 2 seconds
+
     temp = si.temperature()
     print("Read temperature " + str(temp) + " C")
     temp_byte0 = int(temp) # This only works for +ve temperatures
@@ -117,3 +133,5 @@ while True:
     # get any data received (if any...)
     data = s.recv(64)
     print("Optional received data:" + ubinascii.hexlify(data).decode('utf-8'))
+    
+    pycom.rgbled(0x000000) # off
