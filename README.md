@@ -9,7 +9,7 @@ of the Pygate) via PoE.
 In general we have an emphasis on using the devices with LoraWAN (i.e. the [LoPy4](https://pycom.io/product/lopy4/) and
 [Pygate](https://pycom.io/product/pygate/)) but typically we're configuring these things to talk WiFi or Ethernet also as
 part of our development. Note that the Pycom family of products typically use a 'SoC module' (in our case usually a LoPy4)
-attached to an expansion board of some kind e.g. Pysense) which may add sensors but also conveniently provides a USB-to-serial
+attached to an expansion board of some kind (e.g. Pysense) which may add sensors but also conveniently provides a USB-to-serial
 connection to your development workstation which then also powers the dev boards. Expansion boards we're using include:
 * [Pycom Expansion Board 3.0](https://pycom.io/product/expansion-board-3-0/) providing breakout access to all the SoC pins.
 * [Pycom Pysense 2.0X](https://pycom.io/product/pysense-2-0-x/) which adds sensors to temperature, humidity, acceleration, lux.
@@ -24,11 +24,11 @@ Note purchasing the expansion boards does NOT include the required SoC module (e
 
 This readme (below) has a summary of the 'firmware update' process for BOTH the expansion board (do this first) and
 the LoPy4 (or WiPy, FiPy etc) module used. The components will work out-of-the-box but it's recommended to upgrade them
-to the latest firmware before using them
+to the latest firmware before using them.
 
 Also in this readme there's a brief discussion of the alternative development tools, i.e. Pymakr (from Pycom),
-rshell (3rd party open-source) and mpfshel (3rd-party open source). Each of these provides the same basic
-functionality i.e. the ability to transfer files to/from the compute module, and interact with the micropython
+rshell (3rd party open-source) and mpfshell (3rd-party open source). Each of these provides the same basic
+functionality i.e. the ability to transfer files to/from the dev module, and interact with the micropython
 interpreter on that compute module (referred to as the REPL loop).
 
 The `examples` directory contains a number of sample programs, mainly evolved from sample code in the
