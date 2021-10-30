@@ -77,7 +77,36 @@ Then install / update the compute module (e.g. LoPy4) using `pycom-fwtool`.
 * Press-and-hold `S1/MCLR` button
 * Insert USB, wait 1 second
 * Hit `<Enter>` on pre-typed command (within 7 seconds)
-* Command should complete with "Done!"
+* Command should complete with "Done!", a successful example is below:
+```
+ijl20@ijl20-tosh-laptop:~/src/sensor_pycom/boards$ sudo dfu-util -D  expansion31_0.0.11.dfu
+dfu-util 0.9
+
+Copyright 2005-2009 Weston Schmidt, Harald Welte and OpenMoko Inc.
+Copyright 2010-2016 Tormod Volden and Stefan Schmidt
+This program is Free Software and has ABSOLUTELY NO WARRANTY
+Please report bugs to http://sourceforge.net/p/dfu-util/tickets/
+
+Match vendor ID from file: 04d8
+Match product ID from file: ef99
+Opening DFU capable USB device...
+ID 04d8:ef99
+Run-time device DFU version 0100
+Claiming USB DFU Runtime Interface...
+Determining device status: state = dfuIDLE, status = 0
+dfu-util: WARNING: Runtime device already in DFU state ?!?
+Claiming USB DFU Interface...
+Setting Alternate Setting #0 ...
+Determining device status: state = dfuIDLE, status = 0
+dfuIDLE, continuing
+DFU mode device DFU version 0100
+Device returned transfer size 64
+Copying data from PC to DFU device
+Download	[=========================] 100%        16384 bytes
+Download done.
+state(2) = dfuIDLE, status(0) = No error condition is present
+Done!
+```
 
 ### LoPy module
 
