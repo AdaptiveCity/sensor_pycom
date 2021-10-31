@@ -1,3 +1,4 @@
 #!/bin/bash
 
-ls -l /dev/tty* | grep dialout | grep -v /dev/ttyS
+ls -l /dev/serial/by-id
+
