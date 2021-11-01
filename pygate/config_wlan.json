@@ -1,0 +1,5 @@
+{
+    "acp_id": "<ID OF YOUR DEVICE>",
+    "ssid": "UniOfCam-IoT",
+    "passphrase": "<PASSPHRASE>"
+}

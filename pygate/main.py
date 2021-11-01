@@ -1,5 +1,6 @@
 from network import WLAN
 import time
+import ujson
 import machine
 from machine import RTC
 import pycom
@@ -24,15 +25,20 @@ def machine_cb (arg):
 # register callback function
 machine.callback(trigger = (machine.PYGATE_START_EVT | machine.PYGATE_STOP_EVT | machine.PYGATE_ERROR_EVT), handler=machine_cb)
 
-print('Connecting to WiFi...',  end='')
+print('Loading Wifi config from config_wlan.json...')
+with open("config_wlan.json", "r") as wc:
+    wc = ujson.load(wc)
+
+print('Connecting '+wc["acp_id"]+' to WiFi ssid '+wc["ssid"]+'.',end='')
+
 # Connect to a Wifi Network
 wlan = WLAN(mode=WLAN.STA)
-wlan.connect(ssid='<SSID>', auth=(WLAN.WPA2, "<PASSWORD>"))
+wlan.connect(ssid=wc["ssid"], auth=(WLAN.WPA2, wc["passphrase"]), hostname=wc["acp_id"])
 
 while not wlan.isconnected():
     print('.', end='')
     time.sleep(1)
-print(" OK")
+print(" OK\n")
 
 # Sync time via NTP server for GW timestamps on Events
 print('Syncing RTC via ntp...', end='')

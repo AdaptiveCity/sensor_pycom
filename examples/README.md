@@ -131,3 +131,99 @@ Battery voltage: 4.701756  percentage:  102.5053
 >>>
 ```
 At this point you can exit the REPL python prompt with `Ctrl-]` and then quit `mpfshell` with `Ctrl-D`.
+
+## test_wlan.py
+
+This script will test your wifi connection.
+
+### Step 1. Get the LoPy4 WiFi mac address
+
+At the REPL prompt (i.e. via `mpfshell` or similar), get the WLAN mac address with:
+```
+from network import WLAN
+import binascii
+wl = WLAN()
+binascii.hexlify(wl.mac().sta_mac)
+```
+e.g. we will assume `ABCDEF010203` in example below.
+
+### Step 2. Register the device to access your network (if necessary)
+
+These instructions are for "UniOfCam-IoT" but the `config_wlan.json` file created below will allow connection to any
+WiFi network with a WPA passphrase.
+
+A guide available here: https://help.uis.cam.ac.uk/service/wi-fi/unicam-iot-wifi
+
+The actual registration site is here: https://uws-cppm-a1.wireless.cam.ac.uk/guest/mac_index.php
+
+After entering the wlan mac address, you will receive an email with a unique passphrase.
+
+### Step 3. Give the LoPy4 the required WiFi credentials
+
+Copy the file `examples/config_wlan.json` to `secrets/config_wlan.json`.
+
+Edit that file to contain the credentials for your device, e.g.
+```
+{
+    "acp_id": "ijl20-lopy4-010203",
+    "ssid": "UniOfCam-IoT",
+    "passphrase": "ijLJzEve"
+}
+```
+
+Via an `mpfshell` prompt (or similar):
+```
+put secrets/config_wlan.json config_wlan.json
+```
+
+###  Step 4. Copy `uping.py` and `test_wlan.py` to the LoPy4
+
+Via an `mpfshell` prompt (or similar):
+```
+put examples/uping.py uping.py
+put examples/test_wlan.py test_wlan.py
+```
+
+
+## Run `test_wlan.py`
+
+Via an `mpfshell` prompt (or similar):
+```
+mpfs [/flash]> repl
+>
+*** Exit REPL with Ctrl+] ***
+
+Pycom MicroPython 1.20.2.r6 [v1.11-c5a0a97] on 2021-10-28; LoPy4 with ESP32
+Type "help()" for more information.
+>>> execfile("test_wlan.py")
+```
+If successful, you will see something like:
+```
+Instantiating WLAN
+Calling wlan.init()
+Using WiFi mac address: ABCDEF010203
+Scanning for WiFi networks
+    found ssid UniOfCam-IoT
+    found ssid w-107-CB3-0FD
+    found ssid eduroam
+    found ssid UniOfCam
+    found ssid UniOfCam-Guest
+    found ssid co2mesh
+    found ssid Internal-CL
+    found ssid wgb
+Loading Wifi config from config_wlan.json...
+Connecting ijl20-lopy4-d67e6c to WiFi ssid UniOfCam-IoT..... OK
+
+Connected status:True
+IP settings: ('10.254.236.12', '255.252.0.0', '10.255.255.254', '131.111.8.42')
+Syncing RTC via ntp..... OK
+
+Ping test (cdbb.uk):
+PING cdbb.uk (128.232.98.113): 64 data bytes
+84 bytes from 128.232.98.113: icmp_seq=1, ttl=61, time=7.051000 ms
+84 bytes from 128.232.98.113: icmp_seq=2, ttl=61, time=8.395000 ms
+84 bytes from 128.232.98.113: icmp_seq=3, ttl=61, time=12.400000 ms
+84 bytes from 128.232.98.113: icmp_seq=4, ttl=61, time=10.401000 ms
+4 packets transmitted, 4 packets received
+>>>
+```

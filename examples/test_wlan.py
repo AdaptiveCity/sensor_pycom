@@ -1,13 +1,17 @@
-# For now, this example shows commands to type at the REPL.
-# Note the auth password has to be created as described in cam_wifi.md
+#
+# WiFi test script
+#
+# REQUIRED:
+#   config_wlan.json - contains wifi passphrase
+#   uping.py         - for ping test
 
-ssid = "<ADD YOUR SSID>"
-passphrase = "<ADD YOUR PASSPHRASE>"
 
 from network import WLAN
 import ubinascii
 from uping import ping
+from machine import RTC
 import time
+import ujson
 
 print("Instantiating WLAN")
 wlan = WLAN()
@@ -26,19 +30,36 @@ else:
     for s in ssids:
         print("    found ssid "+s[0])
 
-print("Connecting to "+ssid+" with passphrase "+passphrase)
-#wlan.connect("UniOfCam-IoT",auth=(WLAN.WPA2,"mbRgRHsK"),hostname="ijl20-lopy4-ddc4b2")
-wlan.connect(ssid,auth=(WLAN.WPA2,passphrase),hostname="ijl20-lopy4-ddc4b2")
+print('Loading Wifi config from config_wlan.json...')
+with open("config_wlan.json", "r") as wc:
+    wc = ujson.load(wc)
 
-time.sleep(2)
+print('Connecting '+wc["acp_id"]+' to WiFi ssid '+wc["ssid"]+'.',end='')
+
+# Connect to a Wifi Network
+wlan = WLAN(mode=WLAN.STA)
+wlan.connect(ssid=wc["ssid"], auth=(WLAN.WPA2, wc["passphrase"]), hostname=wc["acp_id"])
 
 while not wlan.isconnected():
-    print("Waiting to connect to "+ssid)
+    print('.', end='')
     time.sleep(1)
+print(" OK\n")
+
+time.sleep(2)
 
 print("Connected status:" + str(wlan.isconnected()))
 
 print("IP settings: " + str(wlan.ifconfig()))
 
-print("Ping test:")
+# Sync time via NTP server for GW timestamps on Events
+print('Syncing RTC via ntp...', end='')
+rtc = RTC()
+rtc.ntp_sync(server="pool.ntp.org")
+
+while not rtc.synced():
+    print('.', end='')
+    time.sleep(.5)
+print(" OK\n")
+
+print("Ping test (cdbb.uk):")
 ping('cdbb.uk')
