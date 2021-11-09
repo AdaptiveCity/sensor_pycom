@@ -2,7 +2,7 @@ from network import ETH, WLAN
 import time
 import ujson
 import machine
-from machine import RTC
+from machine import RTC, Pin
 import pycom
 from get_time import get_current_time
 import socket
@@ -27,11 +27,16 @@ def machine_cb (arg):
 # register callback function
 machine.callback(trigger = (machine.PYGATE_START_EVT | machine.PYGATE_STOP_EVT | machine.PYGATE_ERROR_EVT), handler=machine_cb)
 
+# check if the PyEthernet module is connected
+print('PyEthernet Pins: ',[Pin('P17')(), Pin('P18')(), Pin('P19')(), Pin('P21')(), Pin('P22')(), Pin('P23')()])
+pyethernet_pin_active = sum([Pin('P17')(), Pin('P18')(), Pin('P19')(), Pin('P21')(), Pin('P22')(), Pin('P23')()]) >= 4
+
 # Try the Ethernet Connection first
 print('Trying to connect ethernet...',end='')
 timer = 0
 eth_flag = False
-try:
+
+if pyethernet_pin_active:
    eth = ETH()
    eth.init()
 
@@ -45,8 +50,8 @@ try:
        print('Ethernet Connected OK')
        print(eth.ifconfig())
        eth_flag = True
-except:
-    print('Ethernet Exception')
+else:
+   print('PyEthernet not connected or faulty.')
 
 # Connect to WiFi if Ethernet not available
 if not eth_flag:
