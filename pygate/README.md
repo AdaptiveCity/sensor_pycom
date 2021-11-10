@@ -185,6 +185,14 @@ Via an `mpfshell` prompt (or similar):
 put pygate/main.py main.py
 ```
 
+## Copy `get_time.py` to the Pygate
+
+NTP Sync fails sometimes, especially with Ethernet, hence we use our own time sync module for RTC.
+Via an `mpfshell` prompt (or similar):
+```
+put pygate/get_time.py get_time.py
+```
+
 ## Check the required files are on the Pygate
 
 Via an `mpfshell` prompt (or similar):
