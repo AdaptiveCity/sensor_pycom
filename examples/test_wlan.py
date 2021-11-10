@@ -45,7 +45,19 @@ while not wlan.isconnected():
     time.sleep(1)
 print(" OK\n")
 
-time.sleep(2)
+# Loop until we have an IP address
+ip_connected_count = 0
+while True:
+    if ip_connected_count == 20:
+        print("No wlan IP address after 20 seconds, rebooting")
+        machine.reset()
+    ips = wlan.ifconfig()
+    if ips[0] != '0.0.0.0':
+        print('WLAN connection successful with '+ips[0])
+        break
+    print('WLAN IP not ready '+str(ips))
+    ip_connected_count += 1
+    time.sleep(1)
 
 print("Connected status:" + str(wlan.isconnected()))
 

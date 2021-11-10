@@ -115,23 +115,15 @@ Start the `mpfshell` (or other) console to talk to the LoPy.
 Copy the `ping` utility, e.g. via:
 ```
 put examples/uping.py uping.py
+put examples/test_wlan.py test_wlan.py
 ```
 
-Then use the `repl` command to drop into Python on the LoPy4, and enter the following. You will see results occasionally
-between the statements (e.g. wlan.isconnected() should return `True`).
-
-For the `wlan.connect()` you must insert the correct SSID and WPA passphrase.
+Then use the `repl` command to drop into Python on the LoPy4.
 
 ```
-from network import WLAN
-wlan = WLAN()
-wlan.init(mode=WLAN.STA)
-wlan.connect(<SSID>,auth=(WLAN.WPA2,<PASSPHRASE>))
-wlan.isconnected()
-wlan.ifconfig()
-from uping import ping
-ping('cdbb.uk')
+execfile('test_wlan.py')
 ```
+The test should complete with a successful ping.
 
 ## Create Gateway on TTN V3 console
 

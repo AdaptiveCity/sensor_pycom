@@ -60,20 +60,37 @@ if not eth_flag:
     with open("config_wlan.json", "r") as wc:
         wc = ujson.load(wc)
 
-    print('Connecting '+wc["acp_id"]+' to WiFi ssid '+wc["ssid"]+'.',end='')
-
     # Connect to a Wifi Network
     wlan = WLAN(mode=WLAN.STA)
     wlan.connect(ssid=wc["ssid"], auth=(WLAN.WPA2, wc["passphrase"]), hostname=wc["acp_id"])
 
+    wlan_connect_count = 0
     while not wlan.isconnected():
+        if wlan_connect_count == 30:
+            print("WLAN not connected for 30 seconds - rebooting")
+            machine.reset()
         print('.', end='')
-        time.sleep(1)    
-    print(wlan.ifconfig())
-    print("WLAN Connected OK\n")
+        wlan_connect_count += 1
+        time.sleep(1)
+    print(" OK\n")
 
-# Ensure that the interface is ready
-time.sleep(2)
+    # Loop until we have an IP address
+    ip_connected_count = 0
+    while True:
+        if ip_connected_count == 30:
+            print("No wlan IP address after 30 seconds, rebooting")
+            machine.reset()
+        ips = wlan.ifconfig()
+        if ips[0] != '0.0.0.0':
+            print('WLAN connection successful with '+ips[0])
+            break
+        print('WLAN IP not ready '+str(ips))
+        ip_connected_count += 1
+        time.sleep(1)
+
+    print("Connected status:" + str(wlan.isconnected()))
+
+    print("IP settings: " + str(wlan.ifconfig()))
 
 # Sync time using a socket connection to a local website
 print('Syncing RTC...', end='')
