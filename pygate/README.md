@@ -1,5 +1,7 @@
 # Pygate
 
+![pygate image](../images/pygate.jpg)
+
 ## Pygate Assembly
 
 Components:
@@ -8,14 +10,18 @@ Components:
 * Pygate case
 * LoRa antenna with IPX tail connector
 * USB C cable
+* PoE hat (if ethernet)
+* WiFi antenna (if WiFi, can also omit this and rely on the built-in antenna which is ok)
 
 Assemble:
 * Connect LoPy4 onto Pygate board
 * Connect Lora antenna tail to Pygate board (NOT the LoPy4)
+* Connect WiFi antenna tail to LoPy4 board (if wifi)
 * Place board in Pygate Case BOTTOM (insert USB first, than settle board on pegs)
 * From screws/buttons bag place button inserts in slots
-* On Pygate case TOP: Thread antenna plug (on end of tail) through existing hole, affix nut.
+* On Pygate case TOP: Thread antenna plugs (on end of tail) through holes, affix nut.
 * Place TOP of case on BOTTOM - buttons should click on press - affix with 4 screws.
+* Buttons can be tight after case is screwed together, so check.
 * Attach via USB C cable to your PC
 
 ## Pygate board 'dfu-utils' firmware update
@@ -35,7 +41,7 @@ See the general instructions in the [main README of this repo](../README.md).
 Two additional hints:
 1. `pycom-fwtool` sometimes has problems downloading the firmware directly from the web e.g. with "Error creating Device record".
 In that case you can manually download the software from https://docs.pycom.io/advance/downgrade/ and use the "install from
-local file" option in `pycom-fwtool`.
+local file" option in `pycom-fwtool`. Note the 'web-download' is required to get the SigFox identifiers, if you want those...
 
 2. You can confirm you have the 'Pygate' firmware installed via the REPL - this should not give an error:
 ```
@@ -87,12 +93,6 @@ e.g. we will assume `ABCDEF010203` in example below.
 These instructions are for "UniOfCam-IoT" but the `config_wlan.json` file created below will allow connection to any
 WiFi network with a WPA passphrase.
 
-A guide available here: https://help.uis.cam.ac.uk/service/wi-fi/unicam-iot-wifi
-
-The actual registration site is here: https://uws-cppm-a1.wireless.cam.ac.uk/guest/mac_index.php
-
-After entering the wlan mac address, you will receive an email with a unique passphrase.
-
 Copy the file `pygate/config_wlan.json` to `secrets/pygate-010203_config_wlan.json`.
 
 Edit that file to contain the credentials for your device, e.g.
@@ -103,6 +103,16 @@ Edit that file to contain the credentials for your device, e.g.
     "passphrase": "ijLJzEve"
 }
 ```
+
+### For Cambridge University wifi
+
+A guide is available here: https://help.uis.cam.ac.uk/service/wi-fi/unicam-iot-wifi
+
+The actual registration site is here: https://uws-cppm-a1.wireless.cam.ac.uk/guest/mac_index.php
+
+After entering the wlan mac address, you will receive an email with a unique passphrase.
+
+## Put the credentials onto your module
 
 Via an `mpfshell` prompt (or similar):
 ```
@@ -203,6 +213,7 @@ Remote files in '/flash':
        main.py
        uping.py
 ```
+You may still have `test_wlan.py` from earlier but that's ok.
 
 ## Start the Pygate and check it connects to TTN ok
 
@@ -221,3 +232,7 @@ powered via USB and connecting via WiFi, it should successfully connect via the 
 
 The PoE/Ethernet connection defaults to using a DHCP client - if you want to override the `ifconfig` settings, see
 https://docs.pycom.io/firmwareapi/pycom/network/eth/
+
+**Careful** there are warnings not to connect BOTH the PoE and the USB at the same time unless you are sure those power
+sources will not create the risk of a ground loop that could fry the Pygate. The simplest rule is if PoE is connected, only
+connect a laptop via USB to the Pygate if the laptop is running on battery power, not the mains...
