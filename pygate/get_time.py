@@ -16,7 +16,7 @@ def datetime_to_tuple(datetime_now):
 
 def get_current_time():
     s = socket.socket()
-    s = ssl.wrap_socket(s)
+    #s = ssl.wrap_socket(s)
 
     host = 'cdbb.uk'
     addr = socket.getaddrinfo(host,443)[0][-1]
@@ -33,5 +33,7 @@ def get_current_time():
 
     response_str = str(rec_bytes)
     datetime_now = (response_str.strip().split('Date:'))[1].split('GMT')[0]
+    
+    s.close()
 
     return(datetime_to_tuple(datetime_now))
