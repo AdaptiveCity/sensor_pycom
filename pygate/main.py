@@ -2,10 +2,29 @@ from network import ETH, WLAN
 import time
 import ujson
 import machine
-from machine import RTC, Pin
+from machine import RTC, Pin, Timer
 import pycom
 from get_time import get_current_time
 import socket
+
+class Clock:
+
+    def __init__(self):
+        self.seconds = 0
+        self.__alarm = Timer.Alarm(self._rtc_handler, 1200, periodic=True)
+
+    def _rtc_handler(self, alarm):
+        # Sync time using a socket connection to a local website
+        pycom.rgbled(0x00007f)
+        print('Syncing RTC...', end='')
+        rtc = RTC()
+        print('Current RTC..', rtc.now())
+        current_time = get_current_time()
+        print('Web time.. ' + str(current_time))
+        rtc.init(current_time)
+        print('RTC OK.. ' + str(rtc.now()))
+        time.sleep(10)
+        pycom.rgbled(0x103300)
 
 print('\nStarting LoRaWAN concentrator')
 # Disable Hearbeat
@@ -99,6 +118,8 @@ current_time = get_current_time()
 print('Web time.. ' + str(current_time))
 rtc.init(current_time)
 print('RTC OK.. ' + str(rtc.now()))
+
+clock = Clock()
 
 # Read the GW config file from Filesystem
 with open('/flash/global_config.json','r') as fp:
