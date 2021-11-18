@@ -211,6 +211,7 @@ Remote files in '/flash':
        config_wlan.json
        global_config.json
        main.py
+       get_time.py
        uping.py
 ```
 You may still have `test_wlan.py` from earlier but that's ok.

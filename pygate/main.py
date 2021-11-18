@@ -2,46 +2,89 @@ from network import ETH, WLAN
 import time
 import ujson
 import machine
-from machine import RTC, Pin, Timer
+from machine import RTC, Pin, Timer, WDT
 import pycom
 from get_time import get_current_time
 import socket
 
+wdt = WDT(timeout=1250000)
+
+class Monitor:
+    def __init__(self):
+        with open("boot_info.json", "r") as boot_file:
+            self.boot_info = ujson.load(boot_file)
+        self.boot_info["boot"]+=1
+        print(self.boot_info)
+        self.write_boot_info()
+        self.led = 0x000000
+    
+    def set_led(self, colour):
+        if colour == 'red':
+            self.led+= 0x330000
+        elif colour == 'green':
+            self.led+=0x003300
+        elif colour == 'blue':
+            self.led+=0x000033
+        else:
+            self.led = 0x00000
+        pycom.rgbled(self.led)
+
+    def write_boot_info(self):
+        with open('boot_info.json', 'w') as boot_file:
+            boot_update = ujson.dumps(self.boot_info)
+            boot_file.write(boot_update)
+
+monitor = Monitor()
+
 class Clock:
 
     def __init__(self):
-        self.seconds = 0
-        self.__alarm = Timer.Alarm(self._rtc_handler, 1200, periodic=True)
+        self.__alarm = Timer.Alarm(self._wdt_handler, 600, periodic=True)
+        self.fail = 0
 
-    def _rtc_handler(self, alarm):
-        # Sync time using a socket connection to a local website
-        pycom.rgbled(0x00007f)
-        print('Syncing RTC...', end='')
-        rtc = RTC()
-        print('Current RTC..', rtc.now())
-        current_time = get_current_time()
-        print('Web time.. ' + str(current_time))
-        rtc.init(current_time)
-        print('RTC OK.. ' + str(rtc.now()))
-        time.sleep(10)
-        pycom.rgbled(0x103300)
+    def _wdt_handler(self, alarm):
+        socket_flag = False
+        try:
+            s = socket.getaddrinfo('cdbb.uk',443)[0][-1]
+            if s[0] == '128.232.98.113':
+                socket_flag = True
+        except:
+            print('Unable to get address info. Possibly an internet connectivity issue.')
+
+        if socket_flag:
+            if self.fail != 0:
+                self.fail == 0
+            wdt.feed()
+        else:
+            monitor.set_led('blue')
+            self.fail+=1
+            if self.fail == 2:
+                monitor.boot_info['reboot']+=1
+                monitor.write_boot_info()
+            print('Error getting address info.')
+
 
 print('\nStarting LoRaWAN concentrator')
 # Disable Hearbeat
 pycom.heartbeat(False)
+
+clock = Clock()
 
 # Define callback function for Pygate events
 def machine_cb (arg):
     evt = machine.events()
     if (evt & machine.PYGATE_START_EVT):
         # Green
-        pycom.rgbled(0x103300)
+        # pycom.rgbled(0x103300)
+        monitor.set_led('green')
     elif (evt & machine.PYGATE_ERROR_EVT):
         # Red
-        pycom.rgbled(0x331000)
+        # pycom.rgbled(0x331000)
+        monitor.set_led('red')
     elif (evt & machine.PYGATE_STOP_EVT):
         # RGB off
-        pycom.rgbled(0x000000)
+        # pycom.rgbled(0x000000)
+        monitor.set_led('off')
 
 # register callback function
 machine.callback(trigger = (machine.PYGATE_START_EVT | machine.PYGATE_STOP_EVT | machine.PYGATE_ERROR_EVT), handler=machine_cb)
@@ -119,7 +162,7 @@ print('Web time.. ' + str(current_time))
 rtc.init(current_time)
 print('RTC OK.. ' + str(rtc.now()))
 
-clock = Clock()
+# clock = Clock()
 
 # Read the GW config file from Filesystem
 with open('/flash/global_config.json','r') as fp:
