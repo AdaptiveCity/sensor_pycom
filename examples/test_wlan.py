@@ -5,13 +5,17 @@
 #   config_wlan.json - contains wifi passphrase
 #   uping.py         - for ping test
 
-
+import pycom
 from network import WLAN
 import ubinascii
 from uping import ping
 from machine import RTC
+import machine
 import time
 import ujson
+
+print("Setting STATION mode as default boot mode for WiFi (disabling access point)")
+pycom.wifi_mode_on_boot(WLAN.STA)
 
 print("Instantiating WLAN")
 wlan = WLAN()
@@ -48,8 +52,8 @@ print(" OK\n")
 # Loop until we have an IP address
 ip_connected_count = 0
 while True:
-    if ip_connected_count == 20:
-        print("No wlan IP address after 20 seconds, rebooting")
+    if ip_connected_count == 30:
+        print("No wlan IP address after 30 seconds, rebooting")
         machine.reset()
     ips = wlan.ifconfig()
     if ips[0] != '0.0.0.0':
