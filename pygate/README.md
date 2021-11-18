@@ -195,6 +195,21 @@ Via an `mpfshell` prompt (or similar):
 put pygate/get_time.py get_time.py
 ```
 
+## Create boot_info.json
+
+This file stores the necessary boot information. Add the following content to a file `secrets/boot_info.json`:
+```
+{
+    "boot": 0,
+    "reboot": 0,
+    "if_reboot": 0
+}
+```
+Then copy the file via an `mpfshell` prompt (or similar):
+```
+put secrets/boot_info.json boot_info.json
+```
+
 ## Check the required files are on the Pygate
 
 Via an `mpfshell` prompt (or similar):
