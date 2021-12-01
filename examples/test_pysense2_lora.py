@@ -72,6 +72,8 @@ print("LoRa instance created for dev_eui: "+ubinascii.hexlify(lora.mac()).decode
 #     lora.remove_channel(i)
 
 print("Joining Lora network OTAA with app_eui zeroes and app_key: "+ubinascii.hexlify(app_key).decode('utf-8'))
+print("time ms "+str(time.ticks_ms()))
+
 # join a network using OTAA (Over the Air Activation)
 #uncomment below to use LoRaWAN application provided dev_eui
 lora.join(activation=LoRa.OTAA, auth=(app_eui, app_key), timeout=0)
@@ -83,6 +85,7 @@ while not lora.has_joined():
     print('Not yet joined...')
 
 print('Joined')
+print("time ms "+str(time.ticks_ms()))
 pycom.rgbled(0x000700) # green
 
 # create a LoRa socket
@@ -95,10 +98,12 @@ s.setsockopt(socket.SOL_LORA, socket.SO_DR, 5)
 # (waits for the data to be sent and for the 2 receive windows to expire)
 s.setblocking(True)
 
-print("Sending 0xFF00 to LoRaWAN network")
+print("Sending 0xFF00 to LoRaWAN network, time ms "+str(time.ticks_ms()))
 
 # send some data
 s.send(bytes([0xff, 0x00]))
+print("Send returned, time ms "+str(time.ticks_ms()))
+
 
 # make the socket non-blocking
 # (because if there's no data received it will block forever...)
@@ -107,6 +112,7 @@ s.setblocking(False)
 # get any data received (if any...)
 data = s.recv(64)
 print("Optional received data:" + ubinascii.hexlify(data).decode('utf-8'))
+print("time ms "+str(time.ticks_ms()))
 
 pycom.rgbled(0x000000) # off
 
@@ -122,15 +128,19 @@ while True:
 
     temp = si.temperature()
     print("Read temperature " + str(temp) + " C")
+    print("time ms "+str(time.ticks_ms()))
+
     temp_byte0 = int(temp) # This only works for +ve temperatures
     temp_byte1 = int((temp - temp_byte0) * 100)
     msg_bytes = bytearray([temp_byte0, temp_byte1])
     s.setblocking(True)
 
-    print("Sending "+ str(ubinascii.hexlify(msg_bytes)) + " to LoRaWAN network")
+    print("Sending "+ str(ubinascii.hexlify(msg_bytes)) + " to LoRaWAN network, time ms "+str(time.ticks_ms()))
 
     # send some data
     s.send(msg_bytes)
+
+    print("Send returned, time ms "+str(time.ticks_ms()))
 
     # make the socket non-blocking
     # (because if there's no data received it will block forever...)
@@ -138,6 +148,6 @@ while True:
 
     # get any data received (if any...)
     data = s.recv(64)
-    print("Optional received data:" + ubinascii.hexlify(data).decode('utf-8'))
+    print("Optional received data: '" + ubinascii.hexlify(data).decode('utf-8')+"', time ms "+str(time.ticks_ms()))
 
     pycom.rgbled(0x000000) # off
